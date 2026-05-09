@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>GameClient.Console</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../GameShared/Game.cs" />
+    <Compile Include="../GameShared/Protocol.cs" />
+  </ItemGroup>
+</Project>

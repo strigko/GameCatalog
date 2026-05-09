@@ -1,0 +1,228 @@
+<Window x:Class="GameClient.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GameClient.WPF"
+        Title="🎮 Game Catalog" Height="750" Width="985"
+        Background="#0F0F1A"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style x:Key="GameCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#1A1A2E"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#6C63FF" BlurRadius="14" ShadowDepth="0" Opacity="0.35"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#16213E"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="#6C63FF" BlurRadius="22" ShadowDepth="0" Opacity="0.7"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RefreshButtonStyle" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#6C63FF" Offset="0"/>
+                        <GradientStop Color="#E040FB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="24" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.88"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="30,20,30,16">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#1A1A2E" Offset="0"/>
+                    <GradientStop Color="#16213E" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel>
+                <TextBlock Text="🎮 GAME CATALOG"
+                           FontSize="28" FontWeight="Black"
+                           Foreground="White">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#6C63FF" BlurRadius="18" ShadowDepth="0"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock x:Name="SubtitleText"
+                           Text="Downloading data from the server..."
+                           FontSize="12" Foreground="#888" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Background="#13131F" Padding="24,10">
+            <DockPanel>
+                <Button DockPanel.Dock="Left"
+                        x:Name="RefreshButton"
+                        Content="🔄  Update page"
+                        Style="{StaticResource RefreshButtonStyle}"
+                        Click="RefreshButton_Click"/>
+
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse x:Name="StatusDot" Width="10" Height="10" Margin="0,0,8,0">
+                        <Ellipse.Fill>
+                            <SolidColorBrush x:Name="StatusDotBrush" Color="#888"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock x:Name="StatusText" Text="Waiting..."
+                               Foreground="#888" FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock x:Name="CountText" Text=""
+                           Foreground="#6C63FF" FontSize="13" FontWeight="Bold"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10,10">
+                <ItemsControl x:Name="GamesItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource GameCardStyle}" Width="290">
+                                <StackPanel>
+                                    <Border CornerRadius="8" Height="120" Margin="0,0,0,12"
+                                            ClipToBounds="True">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#6C63FF" Offset="0"/>
+                                                <GradientStop Color="#E040FB" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="🎮" FontSize="42"
+                                                       HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding PictureFilePath}"
+                                                       Foreground="#FFFFFF99" FontSize="9"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="16" FontWeight="Bold"
+                                               Foreground="White" TextWrapping="Wrap"
+                                               Margin="0,0,0,6"/>
+
+                                    <TextBlock Text="{Binding Description}"
+                                               FontSize="11" Foreground="#AAAACC"
+                                               TextWrapping="Wrap" MaxHeight="50"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="0,0,0,10"/>
+
+                                    <Separator Background="#2A2A45" Margin="0,0,0,10"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="📅 Year" FontSize="9"
+                                                       Foreground="#666" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding YearOfRelease}"
+                                                       FontSize="15" Foreground="#CCC"
+                                                       FontWeight="SemiBold"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                            <TextBlock Text="💰 Price" FontSize="9"
+                                                       Foreground="#666" FontWeight="Bold"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock FontSize="15" FontWeight="Bold"
+                                                       HorizontalAlignment="Right">
+                                                <TextBlock.Text>
+                                                    <Binding Path="Price" StringFormat="{}{0:F2} ₴"/>
+                                                </TextBlock.Text>
+                                                <TextBlock.Foreground>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                        <GradientStop Color="#6C63FF" Offset="0"/>
+                                                        <GradientStop Color="#E040FB" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Border Background="#0D0D1F" CornerRadius="4"
+                                            Padding="6,3" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Foreground="#555" FontSize="10">
+                                            <Run Text="ID: "/>
+                                            <Run Text="{Binding Id}" FontWeight="Bold" Foreground="#6C63FF"/>
+                                        </TextBlock>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <Border x:Name="LoadingOverlay" Background="#CC0F0F1A"
+                    Visibility="Collapsed">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="⏳" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Downloading data..."
+                               FontSize="18" Foreground="White"
+                               HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="3" Background="#0A0A14" Padding="24,10">
+            <TextBlock x:Name="FooterText"
+                       Text="Game Catalog Client v1.0  |  TCP://{host}:{port}"
+                       Foreground="#333" FontSize="11"
+                       HorizontalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>
